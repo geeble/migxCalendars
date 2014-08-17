@@ -31,6 +31,9 @@ $scriptProperties['selectfields'] = $modx->getOption('datefields', $scriptProper
 $joins = '[{"alias":"Event","selectfields":"id,title,allday,repeating,description"},{"alias":"Category","classname":"migxCalendarCategories","on":"Category.id=Event.categoryid"}]';
 $scriptProperties['joins'] = $modx->getOption('joins',$scriptProperties,$joins);
 
+$where = $modx->getOption('where', $scriptProperties, '');
+$where = !empty($where) ? $modx->fromJSON($where) : array();
+
 // Parse the start/end parameters.
 // These are assumed to be ISO8601 strings with no time nor timezone, like "2013-12-29".
 // Since no timezone will be present, they will parsed as UTC.
@@ -49,6 +52,7 @@ $wheres = array();
 
 $wheres[] = array('migxCalendarDates.startdate:<=' => $end, 'migxCalendarDates.enddate:>=' => $start);
 $wheres[] = array('Event.deleted' => 0, 'Event.published' => 1);
+$wheres[] = $where;
 
 if (is_array($categories)) {
     $cat_array = array();
